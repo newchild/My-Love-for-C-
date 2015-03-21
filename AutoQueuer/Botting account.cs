@@ -2,22 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using PVPNetConnect;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using PVPNetConnect.RiotObjects.Platform.Game;
-using System.Threading;
-using System.Diagnostics;
 using PVPNetConnect.RiotObjects.Platform.Game.Message;
 using PVPNetConnect.RiotObjects.Platform.Matchmaking;
 using PVPNetConnect.RiotObjects.Platform.Statistics;
 using PVPNetConnect.RiotObjects.Platform.Clientfacade.Domain;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Threading;
+using System.Diagnostics;
+using PVPNetConnect.RiotObjects.Team.Dto;
 
 namespace AutoQueuer
 {
     class Botting_account
     {
-        private int IP = 0;
+        private double IP = 0;
         private Process exeProcess;
         private double Level = 0;
         private double XP = 0;
@@ -46,10 +47,10 @@ namespace AutoQueuer
         void connection_OnLogin(object sender, string username, string ipAddress)
         {
             GameStatus = "Logging in...";
-            connect();
+            connect(sender);
         }
 
-        async void connect()
+        async void connect(object data)
         {
             GameStatus = "Connecting...";
             LoginPacket = await connection.GetLoginDataPacketForUser();
@@ -60,6 +61,14 @@ namespace AutoQueuer
             }
             Level = LoginPacket.AllSummonerData.SummonerLevel.Level;
             XP =  LoginPacket.AllSummonerData.SummonerLevel.ExpToNextLevel;
+            IP = LoginPacket.IpBalance;
+            PlayerDTO player = await connection.CreatePlayer();
+            if (LoginPacket.ReconnectInfo != null && LoginPacket.ReconnectInfo.Game != null)
+            {
+                connection_OnMessageReceived(data, (object)LoginPacket.ReconnectInfo.PlayerCredentials);
+            }
+            else
+                connection_OnMessageReceived(data, (object)new EndOfGameStats());
         }
 
         private void LaunchGame(PlayerCredentialsDto CurrentGame)
@@ -177,6 +186,7 @@ namespace AutoQueuer
                         LoginPacket = await this.connection.GetLoginDataPacketForUser();
                         Level = LoginPacket.AllSummonerData.SummonerLevel.Level;
                         XP = LoginPacket.AllSummonerData.SummonerLevel.ExpToNextLevel;
+                        IP = LoginPacket.IpBalance;
                     }
                 }
             }

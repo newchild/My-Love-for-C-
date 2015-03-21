@@ -36,40 +36,28 @@ namespace AutoQueuer
             return false;
         }
 
-        private void AddAccount_Click(object sender, EventArgs e)
-        {
-            if (isInList(UserList.Keys, usernameBox.Text))
-            {
-                MessageBox.Show("User already added");
-                
-            }
-            else
-            {
-                StreamWriter fileOpener = new StreamWriter("accounts.txt", true);
-                UserList.Add(usernameBox.Text, passwordBox.Text);
-                fileOpener.WriteLine(usernameBox.Text + "|" + passwordBox.Text);
-                fileOpener.Dispose();
-                MessageBox.Show("Added user successfully");
-            }
-            
-        }
+        
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.Text = "Autoqueuer by newchild. Thank you maufeat for volibot ^^";
             try
             {
-                string line = "";
-                StreamReader leser = new StreamReader("accounts.txt");
-                while ((line = leser.ReadLine()) != null)
+
+
+                var lines = File.ReadAllLines("accounts.txt");
+                foreach (var line in lines)
                 {
-                    UserList.Add(line.Split('|')[0], leser.ReadLine().Split('|')[1]);
+                    UserList.Add(line.Split('|')[0], line.Split('|')[1]);
                 }
-                leser.Dispose();
+                    
+                
                 
             }
             catch (Exception excepts)
             {
                 StreamWriter fileOpener = new StreamWriter("accounts.txt");
+                MessageBox.Show("Please fill the accounts.txt");
                 fileOpener.Dispose();
             }
         }
