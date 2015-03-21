@@ -19,11 +19,15 @@ namespace AutoQueuer
     class Botting_account
     {
         private double IP = 0;
+        private bool firstTimeInLobby = true;
+        private bool firstTimeInQueuePop = true;
+        private bool HasLaunchedGame = false;
+        private bool firstTimeInCustom = true;
         private Process exeProcess;
         private double Level = 0;
         private double XP = 0;
         private LoginDataPacket LoginPacket;
-        public string username = "";
+        private string username = "";
         private string GameStatus = "IDLE";
         private PVPNetConnection connection = new PVPNetConnection();
         private string user;
@@ -90,9 +94,12 @@ namespace AutoQueuer
 
         public async void connection_OnMessageReceived(object sender, object message)
         {
+            
             if (message is GameDTO)
             {
+                
                 GameDTO game = message as GameDTO;
+                MessageBox.Show(game.GameState);
                 switch (game.GameState)
                 {
                     case "CHAMP_SELECT":
@@ -161,18 +168,24 @@ namespace AutoQueuer
             {
                 if (message is EndOfGameStats)
                 {
+                    var x = message as EndOfGameStats;
                     MatchMakerParams matchParams = new MatchMakerParams();
-                    //Set BotParams
+                   
                     
                         matchParams.BotDifficulty = "MEDIUM";
                     
-                    //Check if is available to join queue.
                     
-                    matchParams.QueueIds = new Int32[1] { (int)QueueType.Bot };
+                    matchParams.QueueIds = new Int32[1] {33};
                     SearchingForMatchNotification m = await connection.AttachToQueue(matchParams);
+					
                     if (m.PlayerJoinFailures == null)
                     {
-                        GameStatus = "In Queue: " + QueueType.Bot.ToString();
+                        GameStatus = "In Queue";
+                    }
+                        
+                    else
+                    {
+                        GameStatus = "Something's wrong";
                     }
                     
                 }
@@ -198,12 +211,6 @@ namespace AutoQueuer
 
 
 
-        public bool firstTimeInLobby { get; set; }
-
-        public bool firstTimeInQueuePop { get; set; }
-
-        public bool firstTimeInCustom { get; set; }
-
-        public bool HasLaunchedGame { get; set; }
+        
     }
 }
