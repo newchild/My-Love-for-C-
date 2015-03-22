@@ -168,6 +168,7 @@ namespace AutoQueuer
             {
                 if (message is EndOfGameStats)
                 {
+					
                     var x = message as EndOfGameStats;
                     MatchMakerParams matchParams = new MatchMakerParams();
                    
@@ -185,7 +186,9 @@ namespace AutoQueuer
                         
                     else
                     {
-                        GameStatus = "Something's wrong";
+						
+                        GameStatus = "Queue failed";
+						
                     }
                     
                 }

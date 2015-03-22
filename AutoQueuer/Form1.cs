@@ -18,6 +18,7 @@ namespace AutoQueuer
         private System.Timers.Timer timer = new System.Timers.Timer(1000);
         List<Botting_account> accounts = new List<Botting_account>();
         private Dictionary<string, string> UserList = new Dictionary<string, string>();
+		private bool isStarted = false;
         public Form1()
         {
             InitializeComponent();
@@ -40,6 +41,7 @@ namespace AutoQueuer
 
         private void Form1_Load(object sender, EventArgs e)
         {
+			
             this.Text = "Autoqueuer by newchild. Thank you maufeat for volibot ^^";
             try
             {
@@ -63,15 +65,24 @@ namespace AutoQueuer
         }
 
         private void Queue_Click(object sender, EventArgs e)
-        {
-            
-            foreach (var user in UserList.Keys)
-            {
-                Botting_account account = new Botting_account(user,UserList[user]);
-                accounts.Add(account);
-            }
-            timer.Enabled = true;
-            timer.Elapsed += timer_Elapsed;
+		{
+
+			if (!isStarted)
+			{
+				isStarted = !isStarted;
+				foreach (var user in UserList.Keys)
+				{
+					Botting_account account = new Botting_account(user, UserList[user]);
+					accounts.Add(account);
+				}
+				timer.Enabled = true;
+				timer.Elapsed += timer_Elapsed;
+			}
+			else
+			{
+				MessageBox.Show("Bots already started :S");
+			}
+			
         }
 
         void timer_Elapsed(object sender, ElapsedEventArgs e)
